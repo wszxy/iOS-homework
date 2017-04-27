@@ -69,6 +69,12 @@ class ViewController: UIViewController {
     
     
     @IBAction func equal(_ sender: Any) {
+        if userIsInTheMiddleOfTyping {
+            if displayValue != 0.0001 {
+                brain.setOperand(displayValue)
+            }
+        }
+        
         brain.equal()
         userIsInTheMiddleOfTyping = false
         if let result = brain.result {

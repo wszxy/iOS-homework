@@ -80,10 +80,12 @@ struct CalculatorBrain {
                 stackSymbol.push(symbol)
             case 3:
                 var temp: String = stackSymbol.peek()!
-                while operationsPriority[temp]! >= 3 {
+                while operationsPriority[temp]! >= 3 && !stackSymbol.isEmpty{
                     let popSymbol = stackSymbol.pop()
                     stack.push(popSymbol!)
-                    temp = stackSymbol.peek()!
+                    if !stackSymbol.isEmpty{
+                        temp = stackSymbol.peek()!
+                    }
                 }
                 stackSymbol.push(symbol)
             case 4:
@@ -126,19 +128,19 @@ struct CalculatorBrain {
                 case "+":
                     let operand1 = stack.pop()! as! Double
                     let operand2 = stack.pop()! as! Double
-                    stack.push(operand1+operand2)
+                    stack.push(operand2+operand1)
                 case "−":
                     let operand1 = stack.pop()! as! Double
                     let operand2 = stack.pop()! as! Double
-                    stack.push(operand1-operand2)
+                    stack.push(operand2-operand1)
                 case "×":
                     let operand1 = stack.pop()! as! Double
                     let operand2 = stack.pop()! as! Double
-                    stack.push(operand1*operand2)
+                    stack.push(operand2*operand1)
                 case "÷":
                     let operand1 = stack.pop()! as! Double
                     let operand2 = stack.pop()! as! Double
-                    stack.push(operand1/operand2)
+                    stack.push(operand2/operand1)
                 default:
                     break
                 }
