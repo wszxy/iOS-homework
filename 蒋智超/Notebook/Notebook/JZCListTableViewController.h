@@ -6,8 +6,7 @@
 //  Copyright © 2017年 miracle. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "JZCBaseTableViewController.h"
 
-@interface JZCListTableViewController : UITableViewController
-
+@interface JZCListTableViewController : JZCBaseTableViewController
 @end

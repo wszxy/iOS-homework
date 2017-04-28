@@ -2,27 +2,26 @@
 //  JZCDetailViewController.m
 //  Notebook
 //
-//  Created by miracle on 2017/4/25.
+//  Created by miracle on 2017/4/26.
 //  Copyright © 2017年 miracle. All rights reserved.
 //
 
 #import "JZCDetailViewController.h"
-
 #import "JZCNote.h"
-
-@interface JZCDetailViewController () <UITextViewDelegate>
+@interface JZCDetailViewController ()<UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UITextField *detailTitle;
 @property (weak, nonatomic) IBOutlet UITextView *detailText;
 @property (weak, nonatomic) IBOutlet UILabel *placeholderLabel;
-
 @end
 
 @implementation JZCDetailViewController
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // Do any additional setup after loading the view from its nib.
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(done)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(cancel)];
+    
     if (self.note) {
         self.detailTitle.text = self.note.noteTitle;
         self.detailText.text = self.note.noteText;
@@ -30,21 +29,34 @@
             self.placeholderLabel.text = @"";
         }
     }
+    
+    [self.detailTitle becomeFirstResponder];
 }
 
-
-- (IBAction)cancel:(id)sender {
+- (void)cancel {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (IBAction)done:(id)sender {
+- (void)done {
     if (self.detailTitle.text.length || self.detailText.text.length) {
         JZCNote *note = [[JZCNote alloc] initWithTitle:self.detailTitle.text andText:self.detailText.text];
-        [self.delegate detailViewController:self noteForDetail:note flag:self.isAdded];
+        if ([self.delegate respondsToSelector:@selector(detailViewController:noteForAdd:)] && self.isAdded) {
+            [self.delegate detailViewController:self noteForAdd:note];
+        } else {
+            if (self.note.isCollected) {
+                note.collect = YES;
+            }
+            [self.delegate detailViewController:self noteForDetail:note];
+        }
         [self.navigationController popViewControllerAnimated:YES];
     }
+
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
 
 #pragma mark - UITextViewDelegate
 - (void)textViewDidChange:(UITextView *)textView {
@@ -56,14 +68,5 @@
 }
 
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

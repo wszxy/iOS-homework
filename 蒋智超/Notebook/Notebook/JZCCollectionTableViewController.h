@@ -6,10 +6,17 @@
 //  Copyright © 2017年 miracle. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "JZCBaseTableViewController.h"
+@class JZCCollectionTableViewController;
+@protocol JZCCollectionTableViewControllerDelegate <NSObject>
 
-@interface JZCCollectionTableViewController : UITableViewController
+- (void)collectionTableViewController:(JZCCollectionTableViewController *)vc withCollections:(NSMutableArray *)col;
+- (void)collectionTableViewController:(JZCCollectionTableViewController *)vc withDeletedRow:(NSInteger)row;
 
-- (void)deliverCollection:(NSMutableArray *)collection;
+@end
+
+@interface JZCCollectionTableViewController : JZCBaseTableViewController
+
+@property (nonatomic, weak) id<JZCCollectionTableViewControllerDelegate> delegate;
 
 @end

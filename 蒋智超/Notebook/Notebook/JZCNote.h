@@ -12,5 +12,6 @@
 @property (nonatomic, copy) NSString *noteTitle;
 @property (nonatomic, copy) NSString *noteText;
 @property (nonatomic, assign, getter=isCollected) BOOL collect;
+@property (nonatomic, copy) NSString *totalStr;
 - (instancetype)initWithTitle:(NSString *)title andText:(NSString *)text;
 @end

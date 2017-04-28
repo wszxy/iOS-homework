@@ -2,7 +2,7 @@
 //  JZCDetailViewController.h
 //  Notebook
 //
-//  Created by miracle on 2017/4/25.
+//  Created by miracle on 2017/4/26.
 //  Copyright © 2017年 miracle. All rights reserved.
 //
 
@@ -11,9 +11,9 @@
 @class JZCDetailViewController;
 
 @protocol JZCDetailViewControllerDelegate <NSObject>
-
-- (void)detailViewController:(JZCDetailViewController *)vc noteForDetail:(JZCNote *)note flag:(BOOL)add;
-
+@optional
+- (void)detailViewController:(JZCDetailViewController *)vc noteForDetail:(JZCNote *)note;
+- (void)detailViewController:(JZCDetailViewController *)vc noteForAdd:(JZCNote *)note;
 @end
 
 @interface JZCDetailViewController : UIViewController

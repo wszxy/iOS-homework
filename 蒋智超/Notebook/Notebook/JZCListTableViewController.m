@@ -8,196 +8,129 @@
 
 #import "JZCListTableViewController.h"
 #import "JZCNote.h"
-#import "JZCListTableHeadView.h"
-#import "JZCDetailViewController.h"
 #import "JZCCollectionTableViewController.h"
+#import "JZCDetailViewController.h"
+#import "JZCListTableHeadView.h"
+#import "JZCSearchResultTableViewController.h"
+@interface JZCListTableViewController () <JZCDetailViewControllerDelegate, JZCCollectionTableViewControllerDelegate, JZCListTableHeadViewDelegate, JZCSearchResultTableViewControllerDelegate>
+@property (nonatomic, weak) JZCListTableHeadView *headVi;
+@property (nonatomic, strong) NSMutableArray *searchResults;
 
-@interface JZCListTableViewController () <JZCDetailViewControllerDelegate>
-@property (nonatomic, strong) NSMutableArray *lists;
-@property (nonatomic, weak) JZCListTableHeadView *headView;
-@property (nonatomic, strong) JZCNote *selectedNote;
-@property (nonatomic, strong) NSIndexPath *selectedIndex;
-@property (nonatomic, strong) NSMutableArray *collections;
 @end
 
 @implementation JZCListTableViewController
 
-- (NSMutableArray *)lists {
-    if (!_lists) {
-        _lists = [NSMutableArray array];
+
+-(NSMutableArray *)searchResults {
+    if (!_searchResults) {
+        _searchResults = [NSMutableArray array];
     }
     
-    return _lists;
+    return _searchResults;
 }
 
-- (NSMutableArray *)collections {
-    if (!_collections) {
-        _collections = [NSMutableArray array];
-    }
-    
-    return _collections;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(add)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏夹" style:UIBarButtonItemStylePlain target:self action:@selector(pushToCollection)];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)pushToCollection {
+    JZCCollectionTableViewController *collectionVC = [[JZCCollectionTableViewController alloc] init];
+    collectionVC.notes = [NSMutableArray arrayWithArray:self.collections];
+    collectionVC.delegate = self;
+    [self.navigationController pushViewController:collectionVC animated:YES];
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 1;
+- (void)add {
+    JZCDetailViewController *detailVC = [[JZCDetailViewController alloc] init];
+    detailVC.delegate = self;
+    detailVC.add = YES;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return self.lists.count;
-}
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-    
-    JZCNote *note = self.lists[indexPath.row];
-    cell.textLabel.text = note.noteTitle;
-    cell.detailTextLabel.text = note.noteText;
-    if (note.isCollected) {
-        cell.accessoryView = [self configureAccessoryViewWithButtonPicture:@"collect"];
-    } else {
-        cell.accessoryView = [self configureAccessoryViewWithButtonPicture:@"uncollect"];
-    }
-    
-    return cell;
-}
-
-- (UIButton *)configureAccessoryViewWithButtonPicture:(NSString *)name {
-    UIButton *bu = [UIButton buttonWithType:UIButtonTypeCustom];
-    [bu setImage:[UIImage imageNamed:name] forState:UIControlStateNormal];
-    bu.frame = CGRectMake(0, 0, 30, 30);
-    [bu addTarget:self action:@selector(tapAccessoryView:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-    return bu;
-}
-
-- (void)tapAccessoryView:(id)esnder forEvent:(UIEvent *)event {
-    UITouch *touch = [[event allTouches] anyObject];
-    CGPoint touchPoint  = [touch locationInView:self.tableView];
-    NSIndexPath *indexpath = [self.tableView indexPathForRowAtPoint:touchPoint];
-    if (indexpath) {
-        [self tableView:self.tableView accessoryButtonTappedForRowWithIndexPath:indexpath];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    JZCNote *note = self.lists[indexPath.row];
-    self.selectedNote = note;
-    self.selectedIndex = indexPath;
-    [self performSegueWithIdentifier:@"detail" sender:self];
-}
-
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-    JZCNote *note = self.lists[indexPath.row];
-    
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
-    hud.mode = MBProgressHUDModeText;
-    
-    if (note.isCollected) {
-        [self.collections removeObject:note];
-        note.collect = NO;
-        hud.label.text = @"已取消收藏";
-    } else {
-        note.collect = YES;
-        [self.collections insertObject:note atIndex:0];
-        hud.label.text = @"已收藏";
-    }
-    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [MBProgressHUD hideHUDForView:self.tableView animated:YES];
-    });
-}
-
+#pragma mark - UITableViewDelegate
+//表头视图
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    self.headView = [[[NSBundle mainBundle] loadNibNamed:@"JZCListTableHeadView" owner:nil options:nil] lastObject];
-    
-    return self.headView;
+    self.headVi =  [[[NSBundle mainBundle] loadNibNamed:@"JZCListTableHeadView" owner:nil options:nil] lastObject];
+    self.headVi.delegate = self;
+    return self.headVi;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 40;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 
 #pragma mark - JZCDetailViewControllerDelegate
-- (void)detailViewController:(JZCDetailViewController *)vc noteForDetail:(JZCNote *)note flag:(BOOL)add{
-    if (add) {
-        [self.lists insertObject:note atIndex:0];
-        [self.tableView reloadData];
-    } else {
-        [self.lists replaceObjectAtIndex:self.selectedIndex.row withObject:note];
-        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndex] withRowAnimation:UITableViewRowAnimationFade];
-    }
+- (void)detailViewController:(JZCDetailViewController *)vc noteForAdd:(JZCNote *)note{
+    [self.notes insertObject:note atIndex:0];
+    [self.tableView reloadData];
 }
 
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqual: @"add"]) {
-        JZCDetailViewController *detailVC = (JZCDetailViewController *)segue.destinationViewController;
-        detailVC.delegate = self;
-        detailVC.add = YES;
-    }
-    if ([segue.identifier isEqualToString:@"detail"]) {
-        JZCDetailViewController *detailVC = (JZCDetailViewController *)segue.destinationViewController;
-        detailVC.delegate = self;
-        detailVC.note = self.selectedNote;
+#pragma mark - JZCCollectionTableViewControllerDelegate
+- (void)collectionTableViewController:(JZCCollectionTableViewController *)vc withCollections:(NSMutableArray *)col {
+    if ([self.collections isEqualToArray:col]) return;
+   
+    for (int i = 0; i < col.count; i++) {
+        JZCNote *colNote = col[i];
+        NSUInteger index = [self.notes indexOfObject:self.collections[i]];
+        [self.notes replaceObjectAtIndex:index withObject:colNote];
     }
     
-    if ([segue.identifier isEqualToString:@"collection"]) {
-        JZCCollectionTableViewController *colVC = (JZCCollectionTableViewController *)segue.destinationViewController;
-        [colVC deliverCollection:self.collections];
+    [self resetCollections];
+    
+    [self.tableView reloadData];
+}
+
+- (void)collectionTableViewController:(JZCCollectionTableViewController *)vc withDeletedRow:(NSInteger)row {
+    JZCNote *colNote = self.collections[row];
+    [self.collections removeObject:colNote];
+    JZCNote *dataNote = self.notes[[self.notes indexOfObject:colNote]];
+    dataNote.collect = NO;
+    [self.tableView reloadData];
+}
+
+#pragma mark - JZClistTableHeadViewDelegate
+- (void)listTableHeadView:(JZCListTableHeadView *)headView withSearchText:(NSString *)text {
+    for (JZCNote *note in self.notes) {
+        if ([note.totalStr containsString:text]) {
+            [self.searchResults addObject:note];
+        }
     }
+    
+    JZCSearchResultTableViewController *searchVC = [[JZCSearchResultTableViewController alloc] init];
+    searchVC.notes = [NSMutableArray arrayWithArray:self.searchResults];
+    searchVC.delegate = self;
+    [self.navigationController pushViewController:searchVC animated:YES];
+}
+
+- (void)listTableHeadViewStartEdit:(JZCListTableHeadView *)headView {
+    self.searchResults = nil;
+}
+
+#pragma mark - JZCSearchResultTableViewControllerDelegate
+- (void)searchResultTableViewController:(JZCSearchResultTableViewController *)vc withDelegateRow:(NSInteger)row {
+    JZCNote *note = self.searchResults[row];
+    [self.searchResults removeObject:note];
+    [self.notes removeObject:note];
+    [self resetCollections];
+    [self.tableView reloadData];
+}
+
+- (void)searchResultTableViewController:(JZCSearchResultTableViewController *)vc withResults:(NSMutableArray *)results {
+    if ([self.searchResults isEqualToArray:results]) return;
+    
+    for (int i = 0; i < results.count; i++) {
+        JZCNote *newResult = results[i];
+        JZCNote *oldResult = self.searchResults[i];
+        [self.notes replaceObjectAtIndex:[self.notes indexOfObject:oldResult] withObject:newResult];
+    }
+    [self resetCollections];
+    [self.tableView reloadData];
 }
 
 

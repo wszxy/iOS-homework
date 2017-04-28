@@ -19,4 +19,8 @@
     return self;
 }
 
+- (NSString *)totalStr {
+    return [[@"" stringByAppendingString:_noteTitle] stringByAppendingString:_noteText];
+}
+
 @end

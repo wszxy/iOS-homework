@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class JZCBaseTableHeadView;
 @interface JZCBaseTableViewController : UITableViewController
-- (void)deliverData:(NSMutableArray *)data;
+@property (nonatomic, strong) NSMutableArray *notes;
+@property (nonatomic, strong) NSMutableArray *collections;
+- (void)resetCollections;
 @end
