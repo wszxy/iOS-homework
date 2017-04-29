@@ -34,6 +34,14 @@
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    JZCNote *note = self.notes[indexPath.row];    
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdateWithFormat:@"delete from t_notes where title = %@ and detailText = %@;", note.noteTitle, note.noteText];
+    }
+    [db close];
+
+    
     [self.notes removeObjectAtIndex:indexPath.row];
     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     

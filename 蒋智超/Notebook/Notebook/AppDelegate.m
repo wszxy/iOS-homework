@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "JZCListTableViewController.h"
+#import "JZCNote.h"
 @interface AppDelegate ()
 
 @end
@@ -18,7 +19,23 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[JZCListTableViewController alloc] init]];
+    
+    JZCListTableViewController *lists = [[JZCListTableViewController alloc] init];
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdate:@"create table  if not exists t_notes (mainKeyID integer primary key autoincrement,title text,detailText text, collect bool);"];
+        FMResultSet *result = [db executeQuery:@"select * from t_notes"];
+        while ([result next]) {
+            JZCNote *note = [[JZCNote alloc] init];
+            note.noteTitle = [result stringForColumn:@"title"];
+            note.noteText = [result stringForColumn:@"detailText"];
+            note.collect = [result boolForColumn:@"collect"];
+            [lists.notes addObject:note];
+        }
+        [lists resetCollections];
+    }
+
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:lists];
     [self.window makeKeyAndVisible];
     return YES;
 }

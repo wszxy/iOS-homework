@@ -34,11 +34,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -109,12 +104,24 @@
             [self.collections removeObject:note];
             note.collect = NO;
             hud.label.text = @"已取消收藏";
+            
+            FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+            if ([db open]) {
+                [db executeUpdateWithFormat:@"update t_notes set collect = %d where title = %@ and detailText = %@;", NO, note.noteTitle, note.noteText];
+            }
+            [db close];
         } else {
             JZCNote *newNote = [[JZCNote alloc] initWithTitle:note.noteTitle andText:note.noteText];
             newNote.collect = YES;
-            [self.collections insertObject:newNote atIndex:0];
+            [self.collections addObject:newNote];
             [self.notes replaceObjectAtIndex:indexpath.row withObject:newNote];
             hud.label.text = @"已收藏";
+            
+            FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+            if ([db open]) {
+                [db executeUpdateWithFormat:@"update t_notes set collect = %d where title = %@ and detailText = %@;", YES, note.noteTitle, note.noteText];
+            }
+            [db close];
         }
         
         [self.tableView reloadRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationFade];
@@ -155,6 +162,13 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     JZCNote *note = self.notes[indexPath.row];
+    
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdateWithFormat:@"delete from t_notes where title = %@ and detailText = %@;", note.noteTitle, note.noteText];
+    }
+    [db close];
+    
     if (note.isCollected) {
         [self.collections removeObject:note];
     }
@@ -164,12 +178,20 @@
 
 #pragma mark - JZCDetailViewControllerDelegate
 - (void)detailViewController:(JZCDetailViewController *)vc noteForDetail:(JZCNote *)note{
+    JZCNote *oldNote = self.notes[self.selectedIndex.row];
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdateWithFormat:@"update t_notes set title = %@, detailText = %@, collect = %d where title = %@ and detailText = %@;", note.noteTitle, note.noteText, note.collect, oldNote.noteTitle, oldNote.noteText];
+    }
+    [db close];
+    
     if (note.isCollected) {
         JZCNote *dataNote = self.notes[self.selectedIndex.row];
         [self.collections replaceObjectAtIndex:[self.collections indexOfObject:dataNote] withObject:note];
     }
     [self.notes replaceObjectAtIndex:self.selectedIndex.row withObject:note];
     [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndex] withRowAnimation:UITableViewRowAnimationFade];
+    
     
 }
 

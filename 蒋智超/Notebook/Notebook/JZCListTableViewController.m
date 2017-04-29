@@ -67,7 +67,13 @@
 
 #pragma mark - JZCDetailViewControllerDelegate
 - (void)detailViewController:(JZCDetailViewController *)vc noteForAdd:(JZCNote *)note{
-    [self.notes insertObject:note atIndex:0];
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdateWithFormat:@"insert into t_notes (title,detailText,collect) values (%@,%@,%d);", note.noteTitle, note.noteText, note.collect];
+    }
+    [db close];
+    
+    [self.notes addObject:note];
     [self.tableView reloadData];
 }
 

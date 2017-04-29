@@ -40,6 +40,13 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    JZCNote *note = self.notes[indexPath.row];
+    FMDatabase *db = [FMDatabase databaseWithPath:kSqlitePath];
+    if ([db open]) {
+        [db executeUpdateWithFormat:@"update t_notes set collect = %d where title = %@ and detailText = %@;", NO, note.noteTitle, note.noteText];
+    }
+    [db close];
+    
     [self.notes removeObjectAtIndex:indexPath.row];
     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     
