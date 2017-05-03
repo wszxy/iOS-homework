@@ -1,0 +1,6 @@
+platform :ios, ’10.0’
+target ‘Notebook’ do
+pod 'MBProgressHUD', '~> 1.0.0'
+pod 'FMDB'
+end
+

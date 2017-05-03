@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="JZCDetailViewController">
+            <connections>
+                <outlet property="detailText" destination="px2-Tq-QpR" id="KuO-q1-Kai"/>
+                <outlet property="detailTitle" destination="2C0-dB-OYL" id="JfZ-4o-m13"/>
+                <outlet property="placeholderLabel" destination="awd-T7-WZz" id="zZ3-Ic-ssG"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="标题" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2C0-dB-OYL">
+                    <rect key="frame" x="8" y="82" width="359" height="30"/>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="px2-Tq-QpR">
+                    <rect key="frame" x="8" y="122" width="359" height="537"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="AOT-Rl-rXG"/>
+                    </connections>
+                </textView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="正文" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="awd-T7-WZz">
+                    <rect key="frame" x="14" y="128" width="42" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="Edp-Wn-Rv7"/>
+                        <constraint firstAttribute="width" constant="42" id="Xqv-V7-7vm"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="px2-Tq-QpR" firstAttribute="leading" secondItem="awd-T7-WZz" secondAttribute="trailing" constant="-48" id="Aom-h8-xpk"/>
+                <constraint firstAttribute="bottomMargin" secondItem="px2-Tq-QpR" secondAttribute="bottom" id="DU9-SU-ubI"/>
+                <constraint firstItem="px2-Tq-QpR" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leadingMargin" id="Fbf-X3-6MK"/>
+                <constraint firstItem="px2-Tq-QpR" firstAttribute="top" secondItem="2C0-dB-OYL" secondAttribute="bottom" constant="10" id="IQg-ql-8gN"/>
+                <constraint firstItem="px2-Tq-QpR" firstAttribute="top" secondItem="awd-T7-WZz" secondAttribute="bottom" constant="-27" id="czJ-nR-wgC"/>
+                <constraint firstItem="2C0-dB-OYL" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailingMargin" id="eVh-OO-Np4"/>
+                <constraint firstItem="2C0-dB-OYL" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="topMargin" constant="74" id="o2V-g0-N5v"/>
+                <constraint firstItem="2C0-dB-OYL" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leadingMargin" id="qjf-H3-L55"/>
+                <constraint firstAttribute="trailingMargin" secondItem="px2-Tq-QpR" secondAttribute="trailing" id="t6V-lK-vnd"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <point key="canvasLocation" x="18.5" y="53.5"/>
+        </view>
+    </objects>
+</document>
